@@ -8,7 +8,7 @@ export default defineConfig({
       entry: resolve(__dirname, 'lib/jaxs-bus.ts'),
       name: 'jaxs-bus',
       // the proper extensions will be added
-      fileName: 'jaxs-bus',
+      fileName: 'jaxs-bus'
     }
-  },
+  }
 })
