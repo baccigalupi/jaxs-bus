@@ -1,0 +1,25 @@
+{
+  "name": "jaxs-bus",
+  "private": false,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && vite build"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0",
+    "vitest": "^1.6.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/jaxs-bus.umd.cjs",
+  "module": "./dist/jaxs-bus.js",
+  "exports": {
+    ".": {
+      "import": "./dist/jaxs-bus.js",
+      "require": "./dist/jaxs-bus.umd.cjs"
+    }
+  }
+}
