@@ -1,39 +1,37 @@
-
-
-export type JaxsBusListenerOptions = {
-  publish: JaxsPublishFunction,
+export type JaxsBusListenerOptions<T> = {
+  publish: JaxsPublishFunction<T>,
   eventName: string,
   [key: string]: any,
 }
 export type JaxsBusOptions = Record<string, any>;
 
-export type JaxsPublishFunction = (event: string, payload: any) => void;
-export type JaxsBusListener = (
-  payload: any,
-  listenerKit: JaxsBusListenerOptions
+export type JaxsPublishFunction<T> = (event: string, payload: T) => void;
+export type JaxsBusListener<T> = (
+  payload: T,
+  listenerKit: JaxsBusListenerOptions<T>
 ) => void
 export type JaxsBusEventMatcher = string | RegExp
 
-type ExactSubscriptionData = {
-  listener: JaxsBusListener,
+type ExactSubscriptionData<T> = {
+  listener: JaxsBusListener<T>,
   index: number,
   matcher: string,
 }
-class ExactSubscriptions {
-  lookup: Record<string, ExactSubscriptionData[]>;
+class ExactSubscriptions<T> {
+  lookup: Record<string, ExactSubscriptionData<T>[]>;
 
   constructor() {
     this.lookup = {}
   }
 
-  add(matcher: JaxsBusEventMatcher, listener: JaxsBusListener, index: number) {
+  add(matcher: JaxsBusEventMatcher, listener: JaxsBusListener<T>, index: number) {
     this.ensureArrayFor(matcher as string)
-    const subscription = { listener, index, matcher } as ExactSubscriptionData
+    const subscription = { listener, index, matcher } as ExactSubscriptionData<T>
     this.lookup[matcher as string].push(subscription)
     return () => this.remove(subscription)
   }
 
-  remove(subscription: ExactSubscriptionData) {
+  remove(subscription: ExactSubscriptionData<T>) {
     if (!this.lookup[subscription.matcher]) return;
 
     this.lookup[subscription.matcher] = this
@@ -43,7 +41,7 @@ class ExactSubscriptions {
           aggregate.push(currentSubscription)
         }
         return aggregate
-      }, [] as ExactSubscriptionData[])
+      }, [] as ExactSubscriptionData<T>[])
   }
 
   matches(event: string) {
@@ -57,31 +55,31 @@ class ExactSubscriptions {
   }
 }
 
-type FuzzySubscriptionData = {
-  listener: JaxsBusListener,
+type FuzzySubscriptionData<T> = {
+  listener: JaxsBusListener<T>,
   index: number,
   matcher: RegExp,
 }
-class FuzzySubscriptions {
-  lookup: FuzzySubscriptionData[];
+class FuzzySubscriptions<T> {
+  lookup: FuzzySubscriptionData<T>[];
 
   constructor() {
     this.lookup = []
   }
   
-  add(matcher: JaxsBusEventMatcher, listener: JaxsBusListener, index: number) {
+  add(matcher: JaxsBusEventMatcher, listener: JaxsBusListener<T>, index: number) {
     const subscription = { listener, index, matcher: matcher as RegExp }
     this.lookup.push(subscription);
     return () => this.remove(subscription)
   }
 
-  remove(subscription: FuzzySubscriptionData) {
+  remove(subscription: FuzzySubscriptionData<T>) {
     this.lookup = this.lookup.reduce((aggregate, currentSubscription) => {
       if (currentSubscription !== subscription) {
         aggregate.push(currentSubscription)
       }
       return aggregate
-    }, [] as FuzzySubscriptionData[])
+    }, [] as FuzzySubscriptionData<T>[])
   }
 
   matches(event: string) {
@@ -89,10 +87,10 @@ class FuzzySubscriptions {
   }
 }
 
-export class JaxsBus {
+export class JaxsBus<T> {
   options: JaxsBusOptions;
-  exactSubscriptions: ExactSubscriptions;
-  fuzzySubscriptions: FuzzySubscriptions;
+  exactSubscriptions: ExactSubscriptions<T>;
+  fuzzySubscriptions: FuzzySubscriptions<T>;
   currentIndex: number;
 
   constructor() {
@@ -102,14 +100,14 @@ export class JaxsBus {
     this.currentIndex = 0;
   }
 
-  subscribe(matcher: JaxsBusEventMatcher, listener: JaxsBusListener) {
+  subscribe(matcher: JaxsBusEventMatcher, listener: JaxsBusListener<T>) {
     const collection = typeof matcher === 'string' ? this.exactSubscriptions : this.fuzzySubscriptions
     const unsubscribe = collection.add(matcher, listener, this.currentIndex)
     this.currentIndex += 1;
     return unsubscribe;
   }
 
-  publish(event: string, payload: any) {
+  publish(event: string, payload: T) {
     const subscriptions = [
       ...this.exactSubscriptions.matches(event),
       ...this.fuzzySubscriptions.matches(event),
