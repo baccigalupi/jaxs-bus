@@ -131,4 +131,18 @@ export class JaxsBus<T> {
   }
 }
 
-export const createBus = () => new JaxsBus()
+export const createBus = <T>() => {
+  const bus = new JaxsBus<T>()
+
+  const publish = (event: string, payload: T) => 
+    bus.publish(event, payload)
+
+  const subscribe = (matcher: JaxsBusEventMatcher, listener: JaxsBusListener<T>) =>
+    bus.subscribe(matcher, listener)
+
+  return {
+    bus,
+    publish,
+    subscribe
+  }
+}

@@ -1,9 +1,9 @@
 var n = Object.defineProperty;
-var c = (r, s, t) => s in r ? n(r, s, { enumerable: !0, configurable: !0, writable: !0, value: t }) : r[s] = t;
-var u = (r, s, t) => (c(r, typeof s != "symbol" ? s + "" : s, t), t);
+var c = (u, s, t) => s in u ? n(u, s, { enumerable: !0, configurable: !0, writable: !0, value: t }) : u[s] = t;
+var r = (u, s, t) => (c(u, typeof s != "symbol" ? s + "" : s, t), t);
 class h {
   constructor() {
-    u(this, "lookup");
+    r(this, "lookup");
     this.lookup = {};
   }
   add(s, t, i) {
@@ -23,7 +23,7 @@ class h {
 }
 class p {
   constructor() {
-    u(this, "lookup");
+    r(this, "lookup");
     this.lookup = [];
   }
   add(s, t, i) {
@@ -39,10 +39,10 @@ class p {
 }
 class l {
   constructor() {
-    u(this, "options");
-    u(this, "exactSubscriptions");
-    u(this, "fuzzySubscriptions");
-    u(this, "currentIndex");
+    r(this, "options");
+    r(this, "exactSubscriptions");
+    r(this, "fuzzySubscriptions");
+    r(this, "currentIndex");
     this.options = {}, this.exactSubscriptions = new h(), this.fuzzySubscriptions = new p(), this.currentIndex = 0;
   }
   subscribe(s, t) {
@@ -68,8 +68,15 @@ class l {
     };
   }
 }
-const b = () => new l();
+const a = () => {
+  const u = new l();
+  return {
+    bus: u,
+    publish: (i, o) => u.publish(i, o),
+    subscribe: (i, o) => u.subscribe(i, o)
+  };
+};
 export {
   l as JaxsBus,
-  b as createBus
+  a as createBus
 };

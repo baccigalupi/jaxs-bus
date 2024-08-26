@@ -47,5 +47,9 @@ declare module "jaxs-bus" {
             eventName: string;
         };
     }
-    export const createBus: () => JaxsBus<unknown>;
+    export const createBus: <T>() => {
+        bus: JaxsBus<T>;
+        publish: (event: string, payload: T) => void;
+        subscribe: (matcher: JaxsBusEventMatcher, listener: JaxsBusListener<T>) => () => void;
+    };
 }

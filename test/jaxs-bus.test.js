@@ -4,7 +4,7 @@ import { createBus } from '../lib/jaxs-bus'
 describe('JaxsBus', () => {
   it('when the bus is configured with special optional payload, that is passed along when the listener is called', () => {
     const eventName = 'do-something'
-    const bus = createBus()
+    const { bus } = createBus()
 
     bus.addListenerOptions({
       state: { something: 'important' },
@@ -18,7 +18,7 @@ describe('JaxsBus', () => {
 
   it('listener options include the event name', () => {
     const eventName = 'do-something'
-    const bus = createBus()
+    const { bus } = createBus()
     const listenerOptions = bus.listenerOptions(eventName)
 
     expect(listenerOptions.eventName).toEqual(eventName)
@@ -26,7 +26,7 @@ describe('JaxsBus', () => {
 
   it('listener options include a publish function', () => {
     const eventName = 'do-something'
-    const bus = createBus()
+    const { bus } = createBus()
     const listenerOptions = bus.listenerOptions(eventName)
 
     expect(listenerOptions.publish).toBeInstanceOf(Function)
@@ -35,7 +35,7 @@ describe('JaxsBus', () => {
 
   it('passes listener options to the listener function when called', () => {
     const eventName = 'do-something'
-    const bus = createBus()
+    const { bus } = createBus()
     const listener = vi.fn()
 
     bus.addListenerOptions({
@@ -54,7 +54,7 @@ describe('JaxsBus', () => {
 
   describe('listening for exact matches', () => {
     it('when the exact event is triggered it calls the listener with the right payload', () => {
-      const bus = createBus()
+      const { bus } = createBus()
       const eventName = 'exacting'
       const listener = vi.fn()
 
@@ -65,7 +65,7 @@ describe('JaxsBus', () => {
     })
 
     it("won't trigger when the event is a partial match or a miss", () => {
-      const bus = createBus()
+      const { bus } = createBus()
       const eventName = 'exacting'
       const listener = vi.fn()
 
@@ -77,7 +77,7 @@ describe('JaxsBus', () => {
     })
 
     it('there can be many listeners for an event, and they are in order they are setup', () => {
-      const bus = createBus()
+      const { bus } = createBus()
       const eventName = 'exacting'
       const listener1 = vi.fn()
       const listener2 = vi.fn()
@@ -91,7 +91,7 @@ describe('JaxsBus', () => {
     })
 
     it('will call the listener each time the event is triggered', () => {
-      const bus = createBus()
+      const { bus } = createBus()
       const eventName = 'exacting'
       const listener = vi.fn()
 
@@ -103,7 +103,7 @@ describe('JaxsBus', () => {
     })
 
     it('returns a function to stop listening when subscribing', () => {
-      const bus = createBus()
+      const { bus } = createBus()
       const eventName = 'exacting'
       const listener = vi.fn()
 
@@ -117,7 +117,7 @@ describe('JaxsBus', () => {
 
   describe('listening for fuzzy matches with regexes', () => {
     it('gets called when the an event name matches the regex', () => {
-      const bus = createBus()
+      const { bus } = createBus()
       const listener = vi.fn()
 
       bus.subscribe(/fuzz.*/, listener)
@@ -131,7 +131,7 @@ describe('JaxsBus', () => {
     })
 
     it('there can be many fuzzy matches for an event, and each listener gets called', () => {
-      const bus = createBus()
+      const { bus } = createBus()
       const listener1 = vi.fn()
       const listener2 = vi.fn()
 
@@ -144,7 +144,7 @@ describe('JaxsBus', () => {
     })
 
     it('returns a function to stop listening when subscribing', () => {
-      const bus = createBus()
+      const { bus } = createBus()
       const listener = vi.fn()
 
       const unsubscribe = bus.subscribe(/fuzz.*/, listener)
@@ -156,7 +156,7 @@ describe('JaxsBus', () => {
   })
 
   it('when there are fuzzy and exact matches it calls them in the order added as subscribers', () => {
-    const bus = createBus()
+    const { bus } = createBus()
     const listenerOrder = []
     const listener1 = vi.fn(() => listenerOrder.push(1))
     const listener2 = vi.fn(() => listenerOrder.push(2))
